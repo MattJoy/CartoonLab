@@ -1,1 +1,755 @@
 
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap');
+  
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  body { font-family: 'Nunito', sans-serif; }
+  
+  .studio {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-height: 600px;
+    background: var(--color-background-primary);
+  }
+  
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    flex-wrap: wrap;
+    background: var(--color-background-secondary);
+  }
+  
+  .toolbar-label {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    min-width: 36px;
+  }
+  
+  .tool-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 0.5px solid var(--color-border-tertiary);
+    background: var(--color-background-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    transition: background 0.12s, border-color 0.12s, transform 0.1s;
+  }
+  .tool-btn:hover { background: var(--color-background-secondary); border-color: var(--color-border-secondary); }
+  .tool-btn.active { background: #EEEDFE; border-color: #7F77DD; }
+  .tool-btn:active { transform: scale(0.93); }
+  
+  .sep { width: 0.5px; height: 24px; background: var(--color-border-tertiary); margin: 0 2px; }
+  
+  .size-row { display: flex; align-items: center; gap: 6px; }
+  .size-dot { border-radius: 50%; background: var(--color-text-primary); cursor: pointer; border: 2px solid transparent; transition: border-color 0.12s; }
+  .size-dot.active { border-color: #7F77DD; }
+  
+  .color-row { display: flex; gap: 4px; align-items: center; }
+  .color-swatch {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.1s, border-color 0.12s;
+  }
+  .color-swatch:hover { transform: scale(1.15); }
+  .color-swatch.active { border-color: var(--color-text-primary); }
+  
+  .canvas-area {
+    position: relative;
+    flex: 1;
+  }
+  
+  #cartoon-canvas {
+    display: block;
+    cursor: crosshair;
+    width: 100%;
+    touch-action: none;
+  }
+  
+  .panels-row {
+    display: flex;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    background: var(--color-background-secondary);
+  }
+  
+  .panel-section {
+    flex: 1;
+    padding: 10px 14px;
+    border-right: 0.5px solid var(--color-border-tertiary);
+  }
+  .panel-section:last-child { border-right: none; }
+  
+  .panel-title {
+    font-size: 11px;
+    color: var(--color-text-tertiary);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  
+  .sticker-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  
+  .sticker-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 0.5px solid var(--color-border-tertiary);
+    background: var(--color-background-primary);
+    cursor: pointer;
+    font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s, transform 0.1s;
+  }
+  .sticker-btn:hover { background: var(--color-background-secondary); transform: scale(1.12); }
+  .sticker-btn:active { transform: scale(0.95); }
+  .sticker-btn.selected { background: #EEEDFE; border-color: #7F77DD; }
+  
+  .bg-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  .bg-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.1s, border-color 0.12s;
+  }
+  .bg-btn:hover { transform: scale(1.12); }
+  .bg-btn.active { border-color: #7F77DD; }
+  
+  .action-row {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+    align-items: center;
+    background: var(--color-background-primary);
+  }
+  
+  .act-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-primary);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    color: var(--color-text-primary);
+    transition: background 0.12s, transform 0.1s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .act-btn:hover { background: var(--color-background-secondary); }
+  .act-btn:active { transform: scale(0.97); }
+  .act-btn.primary {
+    background: #534AB7; color: #fff; border-color: #534AB7;
+  }
+  .act-btn.primary:hover { background: #3C3489; border-color: #3C3489; }
+  
+  .speech-input {
+    flex: 1;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 0.5px solid var(--color-border-secondary);
+    background: var(--color-background-secondary);
+    font-size: 13px;
+    font-family: 'Nunito', sans-serif;
+    color: var(--color-text-primary);
+  }
+  
+  .title-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px 8px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .app-title {
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 20px;
+    color: #534AB7;
+    letter-spacing: 0.02em;
+  }
+  .subtitle {
+    font-size: 12px;
+    color: var(--color-text-tertiary);
+  }
+  .frame-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+  }
+  
+  .frames-strip {
+    display: flex;
+    gap: 8px;
+    padding: 8px 14px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    overflow-x: auto;
+    background: var(--color-background-secondary);
+  }
+  
+  .frame-thumb {
+    width: 64px; height: 48px;
+    border-radius: 6px;
+    border: 2px solid var(--color-border-tertiary);
+    cursor: pointer;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.12s, transform 0.1s;
+  }
+  .frame-thumb:hover { transform: scale(1.05); }
+  .frame-thumb.active-frame { border-color: #7F77DD; }
+  .frame-thumb canvas { width: 100%; height: 100%; display: block; }
+  .frame-thumb .frame-num {
+    position: absolute; bottom: 2px; right: 4px;
+    font-size: 9px; font-weight: 700;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+  
+  .add-frame-btn {
+    width: 64px; height: 48px;
+    border-radius: 6px;
+    border: 0.5px dashed var(--color-border-secondary);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    font-size: 22px;
+    color: var(--color-text-tertiary);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s, color 0.12s;
+  }
+  .add-frame-btn:hover { background: var(--color-background-secondary); color: #534AB7; }
+</style>
+
+<h2 class="sr-only">Cartoon Maker — draw characters, add stickers, create speech bubbles, and animate frames.</h2>
+
+<div class="studio">
+  <div class="title-bar">
+    <span class="app-title">CartoonLab</span>
+    <span class="subtitle">Draw • Stamp • Animate</span>
+    <span class="frame-count" id="frame-counter">Frame 1 of 1</span>
+  </div>
+  
+  <div class="toolbar">
+    <span class="toolbar-label">Tool</span>
+    <button class="tool-btn active" id="btn-pen" title="Pen" onclick="setTool('pen')">✏️</button>
+    <button class="tool-btn" id="btn-brush" title="Brush" onclick="setTool('brush')">🖌️</button>
+    <button class="tool-btn" id="btn-fill" title="Fill" onclick="setTool('fill')">🪣</button>
+    <button class="tool-btn" id="btn-eraser" title="Eraser" onclick="setTool('eraser')">🧹</button>
+    <button class="tool-btn" id="btn-text" title="Text/speech" onclick="setTool('text')">💬</button>
+    
+    <div class="sep"></div>
+    <span class="toolbar-label">Size</span>
+    <div class="size-row" id="size-row">
+      <div class="size-dot active" style="width:6px;height:6px;" data-size="2" onclick="setSize(2,this)"></div>
+      <div class="size-dot" style="width:10px;height:10px;" data-size="5" onclick="setSize(5,this)"></div>
+      <div class="size-dot" style="width:14px;height:14px;" data-size="10" onclick="setSize(10,this)"></div>
+      <div class="size-dot" style="width:18px;height:18px;" data-size="20" onclick="setSize(20,this)"></div>
+    </div>
+    
+    <div class="sep"></div>
+    <span class="toolbar-label">Color</span>
+    <div class="color-row" id="color-row">
+    </div>
+  </div>
+  
+  <div class="frames-strip" id="frames-strip">
+    <div class="frame-thumb active-frame" id="thumb-0" onclick="switchFrame(0)">
+      <canvas id="thumb-canvas-0" width="128" height="96"></canvas>
+      <span class="frame-num">1</span>
+    </div>
+    <button class="add-frame-btn" onclick="addFrame()" title="Add frame">+</button>
+  </div>
+  
+  <div class="canvas-area">
+    <canvas id="cartoon-canvas" width="680" height="360"></canvas>
+  </div>
+  
+  <div class="panels-row">
+    <div class="panel-section">
+      <div class="panel-title">Characters & Stickers</div>
+      <div class="sticker-grid" id="sticker-grid"></div>
+    </div>
+    <div class="panel-section">
+      <div class="panel-title">Backgrounds</div>
+      <div class="bg-grid" id="bg-grid"></div>
+    </div>
+    <div class="panel-section" style="flex: 1.5;">
+      <div class="panel-title">Speech Bubble</div>
+      <div style="display: flex; gap: 6px; align-items: center;">
+        <input class="speech-input" id="speech-text" placeholder="Type bubble text…" maxlength="60" />
+        <button class="act-btn" onclick="addSpeechBubble()">Add 💬</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="action-row">
+    <button class="act-btn" onclick="undoAction()">↩ Undo</button>
+    <button class="act-btn" onclick="clearCanvas()">🗑️ Clear</button>
+    <button class="act-btn" onclick="copyFrame()">⧉ Duplicate</button>
+    <button class="act-btn primary" onclick="playAnimation()">▶ Play Animation</button>
+    <button class="act-btn" onclick="downloadCartoon()">⬇ Save PNG</button>
+  </div>
+</div>
+
+<script>
+const COLORS = [
+  '#1a1a1a','#ffffff','#e24b4a','#D85A30','#EF9F27',
+  '#639922','#1D9E75','#378ADD','#7F77DD','#D4537E',
+  '#885533','#aaaaaa'
+];
+
+const STICKERS = [
+  '😀','😎','😂','😭','😡','🤩','😴','🥳',
+  '🐱','🐶','🦊','🐸','🐧','🦋','🌟','❤️',
+  '💥','🔥','❄️','🌈','🎉','🏆','💡','🚀'
+];
+
+const BACKGROUNDS = [
+  { emoji:'☁️', color:'#e8f4fd', label:'Sky' },
+  { emoji:'🌳', color:'#e8f5e0', label:'Park' },
+  { emoji:'🌆', color:'#f0e8fd', label:'City' },
+  { emoji:'🌊', color:'#d6eeff', label:'Ocean' },
+  { emoji:'🏜️', color:'#fdf4e0', label:'Desert' },
+  { emoji:'🌙', color:'#1a1a2e', label:'Night' },
+  { emoji:'🌺', color:'#fde8ef', label:'Garden' },
+  { emoji:'⬜', color:'#ffffff', label:'Blank' },
+];
+
+let tool = 'pen';
+let brushSize = 2;
+let color = '#1a1a1a';
+let drawing = false;
+let lastX = 0, lastY = 0;
+let selectedSticker = null;
+let undoStack = [];
+let frames = [];
+let currentFrame = 0;
+let animationInterval = null;
+
+const canvas = document.getElementById('cartoon-canvas');
+const ctx = canvas.getContext('2d');
+
+function saveUndo() {
+  undoStack.push(canvas.toDataURL());
+  if (undoStack.length > 20) undoStack.shift();
+}
+
+function syncFrameData() {
+  frames[currentFrame] = canvas.toDataURL();
+  updateThumb(currentFrame);
+}
+
+function initFrames() {
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  frames = [canvas.toDataURL()];
+}
+
+function switchFrame(i) {
+  syncFrameData();
+  currentFrame = i;
+  loadFrame(i);
+  document.querySelectorAll('.frame-thumb').forEach((t,idx) => {
+    t.classList.toggle('active-frame', idx === i);
+  });
+  document.getElementById('frame-counter').textContent = `Frame ${i+1} of ${frames.length}`;
+  undoStack = [];
+}
+
+function loadFrame(i) {
+  const img = new Image();
+  img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); };
+  img.src = frames[i];
+}
+
+function addFrame() {
+  syncFrameData();
+  const newIdx = frames.length;
+  const strip = document.getElementById('frames-strip');
+  const addBtn = strip.querySelector('.add-frame-btn');
+  
+  const thumb = document.createElement('div');
+  thumb.className = 'frame-thumb';
+  thumb.id = `thumb-${newIdx}`;
+  thumb.onclick = () => switchFrame(newIdx);
+  const tc = document.createElement('canvas');
+  tc.id = `thumb-canvas-${newIdx}`;
+  tc.width = 128; tc.height = 96;
+  const num = document.createElement('span');
+  num.className = 'frame-num';
+  num.textContent = newIdx + 1;
+  thumb.appendChild(tc);
+  thumb.appendChild(num);
+  strip.insertBefore(thumb, addBtn);
+  
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  frames.push(canvas.toDataURL());
+  switchFrame(newIdx);
+}
+
+function copyFrame() {
+  syncFrameData();
+  const newIdx = frames.length;
+  const strip = document.getElementById('frames-strip');
+  const addBtn = strip.querySelector('.add-frame-btn');
+  
+  const thumb = document.createElement('div');
+  thumb.className = 'frame-thumb';
+  thumb.id = `thumb-${newIdx}`;
+  thumb.onclick = () => switchFrame(newIdx);
+  const tc = document.createElement('canvas');
+  tc.id = `thumb-canvas-${newIdx}`;
+  tc.width = 128; tc.height = 96;
+  const num = document.createElement('span');
+  num.className = 'frame-num';
+  num.textContent = newIdx + 1;
+  thumb.appendChild(tc);
+  thumb.appendChild(num);
+  strip.insertBefore(thumb, addBtn);
+  
+  frames.push(frames[currentFrame]);
+  switchFrame(newIdx);
+}
+
+function updateThumb(i) {
+  const tc = document.getElementById(`thumb-canvas-${i}`);
+  if (!tc) return;
+  const tctx = tc.getContext('2d');
+  const img = new Image();
+  img.onload = () => { tctx.clearRect(0,0,128,96); tctx.drawImage(img,0,0,128,96); };
+  img.src = frames[i];
+}
+
+function buildColorRow() {
+  const row = document.getElementById('color-row');
+  COLORS.forEach(c => {
+    const s = document.createElement('div');
+    s.className = 'color-swatch' + (c === color ? ' active' : '');
+    s.style.background = c;
+    s.style.border = c === '#ffffff' ? '1.5px solid #ccc' : '2px solid transparent';
+    s.onclick = () => {
+      color = c;
+      document.querySelectorAll('.color-swatch').forEach(sw => sw.classList.remove('active'));
+      s.classList.add('active');
+      if (tool === 'eraser') setTool('pen');
+    };
+    row.appendChild(s);
+  });
+}
+
+function buildStickers() {
+  const grid = document.getElementById('sticker-grid');
+  STICKERS.forEach(e => {
+    const b = document.createElement('button');
+    b.className = 'sticker-btn';
+    b.textContent = e;
+    b.title = 'Click to select, then click on canvas';
+    b.onclick = () => {
+      selectedSticker = e;
+      setTool('sticker');
+      document.querySelectorAll('.sticker-btn').forEach(x => x.classList.remove('selected'));
+      b.classList.add('selected');
+    };
+    grid.appendChild(b);
+  });
+}
+
+function buildBGs() {
+  const grid = document.getElementById('bg-grid');
+  BACKGROUNDS.forEach(bg => {
+    const b = document.createElement('button');
+    b.className = 'bg-btn';
+    b.style.background = bg.color;
+    b.textContent = bg.emoji;
+    b.title = bg.label;
+    b.onclick = () => {
+      saveUndo();
+      const oldComposite = ctx.globalCompositeOperation;
+      ctx.globalCompositeOperation = 'destination-over';
+      ctx.fillStyle = bg.color;
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.globalCompositeOperation = oldComposite;
+      
+      if (bg.label === 'Sky') drawSkyBG();
+      else if (bg.label === 'Park') drawParkBG();
+      else if (bg.label === 'Night') drawNightBG();
+      
+      syncFrameData();
+      document.querySelectorAll('.bg-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    };
+    grid.appendChild(b);
+  });
+}
+
+function drawSkyBG() {
+  const grad = ctx.createLinearGradient(0,0,0,canvas.height);
+  grad.addColorStop(0,'#87CEEB');
+  grad.addColorStop(1,'#e8f4fd');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#ffffff';
+  [[80,60,60],[200,40,45],[350,80,50],[500,50,40],[600,70,35]].forEach(([x,y,r]) => {
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+30,y+10,r*0.7,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x-20,y+5,r*0.6,0,Math.PI*2); ctx.fill();
+  });
+}
+
+function drawParkBG() {
+  ctx.fillStyle = '#87CEEB';
+  ctx.fillRect(0,0,canvas.width,canvas.height*0.6);
+  ctx.fillStyle = '#5a9e2f';
+  ctx.fillRect(0,canvas.height*0.6,canvas.width,canvas.height*0.4);
+  [[100,220,'#2d7a0f'],[300,200,'#1e6b00'],[500,230,'#3a8a15']].forEach(([tx,ty,c]) => {
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(tx-5,ty,10,80);
+    ctx.fillStyle = c;
+    ctx.beginPath(); ctx.arc(tx,ty,40,0,Math.PI*2); ctx.fill();
+  });
+}
+
+function drawNightBG() {
+  const grad = ctx.createLinearGradient(0,0,0,canvas.height);
+  grad.addColorStop(0,'#0a0a1a');
+  grad.addColorStop(1,'#1a1a3e');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = '#ffffff';
+  for (let i=0;i<60;i++) {
+    const sx = Math.random()*canvas.width;
+    const sy = Math.random()*canvas.height*0.75;
+    const sr = Math.random()*1.5+0.5;
+    ctx.beginPath(); ctx.arc(sx,sy,sr,0,Math.PI*2); ctx.fill();
+  }
+  ctx.fillStyle = '#ffffcc';
+  ctx.beginPath(); ctx.arc(580,50,25,0,Math.PI*2); ctx.fill();
+}
+
+function setTool(t) {
+  tool = t;
+  ['pen','brush','fill','eraser','text'].forEach(id => {
+    const b = document.getElementById(`btn-${id}`);
+    if (b) b.classList.toggle('active', id === t);
+  });
+  if (t !== 'sticker') {
+    selectedSticker = null;
+    document.querySelectorAll('.sticker-btn').forEach(x => x.classList.remove('selected'));
+  }
+  canvas.style.cursor = t === 'eraser' ? 'cell' : t === 'fill' ? 'crosshair' : t === 'text' || t === 'sticker' ? 'pointer' : 'crosshair';
+}
+
+function setSize(s, el) {
+  brushSize = s;
+  document.querySelectorAll('.size-dot').forEach(d => d.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const src = e.touches ? e.touches[0] : e;
+  return { x: (src.clientX - rect.left) * scaleX, y: (src.clientY - rect.top) * scaleY };
+}
+
+function floodFill(startX, startY, fillColor) {
+  const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+  const d = imgData.data;
+  const w = canvas.width, h = canvas.height;
+  const si = (Math.floor(startY)*w + Math.floor(startX))*4;
+  const sr = d[si], sg = d[si+1], sb = d[si+2], sa = d[si+3];
+  
+  const fc = document.createElement('canvas');
+  fc.width=1; fc.height=1;
+  const fc2 = fc.getContext('2d');
+  fc2.fillStyle = fillColor;
+  fc2.fillRect(0,0,1,1);
+  const fd = fc2.getImageData(0,0,1,1).data;
+  const fr=fd[0],fg=fd[1],fb=fd[2];
+  
+  if (sr===fr&&sg===fg&&sb===fb) return;
+  
+  const stack = [[Math.floor(startX),Math.floor(startY)]];
+  const visited = new Set();
+  
+  const match = (idx) => Math.abs(d[idx]-sr)<30 && Math.abs(d[idx+1]-sg)<30 && Math.abs(d[idx+2]-sb)<30;
+  
+  while (stack.length > 0) {
+    const [x,y] = stack.pop();
+    if (x<0||x>=w||y<0||y>=h) continue;
+    const key = y*w+x;
+    if (visited.has(key)) continue;
+    const idx = key*4;
+    if (!match(idx)) continue;
+    visited.add(key);
+    d[idx]=fr; d[idx+1]=fg; d[idx+2]=fb; d[idx+3]=255;
+    stack.push([x+1,y],[x-1,y],[x,y+1],[x,y-1]);
+  }
+  ctx.putImageData(imgData,0,0);
+}
+
+canvas.addEventListener('mousedown', e => {
+  const {x,y} = getPos(e);
+  if (tool==='fill') { saveUndo(); floodFill(x,y,color); syncFrameData(); return; }
+  if (tool==='sticker' && selectedSticker) {
+    saveUndo();
+    ctx.font = `${Math.max(40,brushSize*4)}px serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(selectedSticker,x,y);
+    syncFrameData(); return;
+  }
+  if (tool==='text') {
+    const txt = document.getElementById('speech-text').value.trim() || 'Hello!';
+    addBubbleAt(x,y,txt);
+    return;
+  }
+  drawing=true; saveUndo();
+  lastX=x; lastY=y;
+  ctx.beginPath(); ctx.moveTo(x,y);
+});
+
+canvas.addEventListener('mousemove', e => {
+  if (!drawing) return;
+  const {x,y} = getPos(e);
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  if (tool==='eraser') {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.strokeStyle = 'rgba(0,0,0,1)';
+    ctx.lineWidth = brushSize*3;
+  } else {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = tool==='brush' ? brushSize*2.5 : brushSize;
+    ctx.globalAlpha = tool==='brush' ? 0.7 : 1;
+  }
+  ctx.beginPath(); ctx.moveTo(lastX,lastY); ctx.lineTo(x,y); ctx.stroke();
+  ctx.globalAlpha = 1;
+  lastX=x; lastY=y;
+});
+
+canvas.addEventListener('mouseup', e => { 
+  if(drawing){ drawing=false; syncFrameData(); } 
+  ctx.globalCompositeOperation='source-over';
+});
+canvas.addEventListener('mouseleave', e => {
+  if(drawing){ drawing=false; syncFrameData(); }
+  ctx.globalCompositeOperation='source-over';
+});
+
+canvas.addEventListener('touchstart', e => { e.preventDefault(); canvas.dispatchEvent(new MouseEvent('mousedown', {clientX:e.touches[0].clientX,clientY:e.touches[0].clientY})); });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); canvas.dispatchEvent(new MouseEvent('mousemove', {clientX:e.touches[0].clientX,clientY:e.touches[0].clientY})); });
+canvas.addEventListener('touchend', e => { e.preventDefault(); canvas.dispatchEvent(new MouseEvent('mouseup',{})); });
+
+function addBubbleAt(x,y,text) {
+  saveUndo();
+  const pad=12, r=10;
+  ctx.font = 'bold 15px Nunito, sans-serif';
+  const tw = ctx.measureText(text).width;
+  const bw = tw+pad*2, bh=34;
+  const bx=x-bw/2, by=y-bh-20;
+  
+  ctx.fillStyle='#ffffff'; ctx.strokeStyle='#333333'; ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(bx+r,by); ctx.lineTo(bx+bw-r,by);
+  ctx.arcTo(bx+bw,by,bx+bw,by+r,r);
+  ctx.lineTo(bx+bw,by+bh-r);
+  ctx.arcTo(bx+bw,by+bh,bx+bw-r,by+bh,r);
+  ctx.lineTo(bx+bw/2+8,by+bh);
+  ctx.lineTo(bx+bw/2,by+bh+16);
+  ctx.lineTo(bx+bw/2-8,by+bh);
+  ctx.lineTo(bx+r,by+bh);
+  ctx.arcTo(bx,by+bh,bx,by+bh-r,r);
+  ctx.lineTo(bx,by+r);
+  ctx.arcTo(bx,by,bx+r,by,r);
+  ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  
+  ctx.fillStyle='#1a1a1a';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(text,x,by+bh/2);
+  syncFrameData();
+}
+
+function addSpeechBubble() {
+  const txt = document.getElementById('speech-text').value.trim();
+  if (!txt) return;
+  addBubbleAt(canvas.width/2, canvas.height/2, txt);
+}
+
+function undoAction() {
+  if (undoStack.length===0) return;
+  const prev = undoStack.pop();
+  const img = new Image();
+  img.onload = () => { ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0); syncFrameData(); };
+  img.src = prev;
+}
+
+function clearCanvas() {
+  saveUndo();
+  ctx.fillStyle='#ffffff';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  syncFrameData();
+}
+
+function playAnimation() {
+  if (frames.length <= 1) { alert('Add more frames to animate! Use + to add frames.'); return; }
+  syncFrameData();
+  if (animationInterval) { clearInterval(animationInterval); animationInterval=null; return; }
+  
+  let i=0;
+  animationInterval = setInterval(() => {
+    loadFrame(i);
+    document.querySelectorAll('.frame-thumb').forEach((t,idx) => t.classList.toggle('active-frame',idx===i));
+    i=(i+1)%frames.length;
+  }, 300);
+  
+  setTimeout(() => {
+    if(animationInterval){clearInterval(animationInterval);animationInterval=null;}
+    switchFrame(currentFrame);
+  }, frames.length*300*4);
+}
+
+function downloadCartoon() {
+  syncFrameData();
+  const link = document.createElement('a');
+  link.download = 'my-cartoon.png';
+  link.href = frames[currentFrame];
+  link.click();
+}
+
+buildColorRow();
+buildStickers();
+buildBGs();
+initFrames();
+updateThumb(0);
+</script>
